@@ -80,12 +80,13 @@ Mods/
 
 Once this is set up, you can load your mod using the ScrapMechanicModLauncher.
 
+---
+
 ## License
 
-COPYRIGHT (C) 2025 antalervin19
-I do NOT give ANYONE permission to copy, modify or redistribute code in this file!
-If you want to use code from this in your own project(s), you HAVE to ask me for permission first!
-Contacts:
-Discord: antalervin19
+COPYRIGHT (C) 2025 antalervin19  
+I do NOT give ANYONE permission to copy, modify or redistribute code in this file!  
+If you want to use code from this in your own project(s), you HAVE to ask me for permission first!  
+Contacts:  
+Discord: antalervin19  
 Web: https://www.iggames.eu
----
