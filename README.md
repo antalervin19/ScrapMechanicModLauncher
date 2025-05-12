@@ -11,6 +11,7 @@ A Work-In-Progress mod loader and launcher for the game **Scrap Mechanic**.
   - [Mod Content Structure](#mod-content-structure)
   - [File and Folder Structure](#file-and-folder-structure)
   - [Licensing](#license)
+  - [Credits](#credits)
 
 ---
 
@@ -83,6 +84,15 @@ Once this is set up, you can load your mod using the ScrapMechanicModLauncher.
 
 ---
 
+## Credits 
+ 
+Created by: antalervin19  
+Special Thanks to:   
+[BenMcAvoy](https://github.com/BenMcAvoy) 
+[CrackX02](https://github.com/crackx02) 
+ 
+---
+
 ## License
 
 ### COPYRIGHT (C) 2025 antalervin19
@@ -91,4 +101,6 @@ Once this is set up, you can load your mod using the ScrapMechanicModLauncher.
 **Contacts:**  
 **Discord:** antalervin19  
 **Web:** [https://www.iggames.eu](https://www.iggames.eu)
+
+
 
