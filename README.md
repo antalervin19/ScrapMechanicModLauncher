@@ -17,7 +17,7 @@ A Work-In-Progress mod loader and launcher for the game **Scrap Mechanic**.
 
 To get started with the **ScrapMechanicModLauncher**, follow these steps:
 
-1. **Download** the latest release from the [releases section]()
+1. **Download** the latest release from the [releases section](https://github.com/antalervin19/ScrapMechanicModLauncher/releases)
 2. **Unzip** the downloaded file to a desired location on your computer.
 3. Run the `ScrapMechanicModLauncher.exe` file.
 
