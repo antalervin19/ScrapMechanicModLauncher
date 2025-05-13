@@ -12,12 +12,24 @@ import asyncio
 import shutil
 import customtkinter as ctk
 from pathlib import Path
-from FileManager import install_mod, uninstall_mod
-from GameManager import scan_and_get_game_path, run_gameprocess
+from FileManager import (
+    install_mod,
+    uninstall_mod,
+    ensure_network_checksum_disabler
+)
+from GameManager import (
+    scan_and_get_game_path,
+    run_gameprocess,
+    get_exe_version_info
+)
 from LogManager import log
 import tkinter.messagebox as messagebox
 from PIL import Image
 import webbrowser
+
+#Ensure Checksum Disabler
+RESOURCES_DIR = Path("./Resources")
+ensure_network_checksum_disabler(RESOURCES_DIR)
 
 MODS_DIR = Path("./Mods")
 CACHE_FILE = Path(".cache")
@@ -25,20 +37,34 @@ INSTALLED_MODS_FILE = MODS_DIR / "installed_mods.json"
 
 if CACHE_FILE.exists():
     with open(CACHE_FILE, 'r', encoding='utf-8') as f:
-        GAME_DIR = Path(json.load(f)['game_path'])
+        GAME_DIR = Path(json.load(f)['gamepath'])
 else:
-    result = messagebox.askyesno("Error!", "Scrap Mechanic Installation Not found!\nDo you want to run the game to automatically get the installation path?")
+    result = messagebox.askyesno(
+        "Error!",
+        "Scrap Mechanic Installation Not found!\nDo you want to run the game to automatically get the installation path?"
+    )
     if result:
         run_gameprocess()
         GAME_DIR = scan_and_get_game_path()
         if GAME_DIR:
-            with open(CACHE_FILE, 'w', encoding='utf-8') as f:
-                json.dump({"game_path": str(GAME_DIR)}, f, indent=2)
+            pass
         else:
             messagebox.showerror("Error", "Failed to detect Scrap Mechanic path.")
             exit(1)
     else:
         exit(1)
+
+exe_path = GAME_DIR / "Release" / "ScrapMechanic.exe"
+file_ver, _ = get_exe_version_info(str(exe_path))
+
+cache_payload = {
+    "gamepath": str(GAME_DIR),
+    "game_version": file_ver
+}
+with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+    json.dump(cache_payload, f, indent=2)
+
+log(f"Cached game path and version: {file_ver}")
 
 WORKSHOP_MODS_DIR = GAME_DIR.parent.parent / "workshop" / "content" / "387990"
 
@@ -68,19 +94,41 @@ def load_workshop_mods():
         return []
     return load_valid_mods(WORKSHOP_MODS_DIR)
 
-def toggle_mod(mod, button):
-    mod_path = MODS_DIR / mod['folder']
+def check_and_install_mod(mod, button):
+    with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+        cached_data = json.load(f)
+    cached_game_version = cached_data.get("game_version")
+
+    required_game_version = mod['GameVersion']
+    
+    if required_game_version != cached_game_version:
+        result = messagebox.askyesno(
+            "Warning!",
+            f"You are trying to install a mod that is meant for a different game version!\n"
+            f"Game Version: {cached_game_version}\n"
+            f"Mod Version: {required_game_version}\n\n"
+            "Are you sure you want to do this? This may break the game!"
+        )
+        if not result:
+            log(f"User aborted installation of {mod['title']} due to version mismatch.")
+            return
+
     if mod['folder'] in installed_mods:
         log(f"Uninstalling {mod['title']}")
-        asyncio.run(uninstall_mod(mod_path, GAME_DIR))
+        asyncio.run(uninstall_mod(MODS_DIR / mod['folder'], GAME_DIR))
         installed_mods.remove(mod['folder'])
         button.configure(text="Install", fg_color="#5a189a")
     else:
         log(f"Installing {mod['title']}")
-        asyncio.run(install_mod(mod_path, GAME_DIR))
+        asyncio.run(install_mod(MODS_DIR / mod['folder'], GAME_DIR))
         installed_mods.add(mod['folder'])
         button.configure(text="Uninstall", fg_color="#7209b7")
+
     save_installed_mods()
+
+
+def toggle_mod(mod, button):
+    check_and_install_mod(mod, button)
 
 def download_workshop_mod(mod, button):
     src_path = WORKSHOP_MODS_DIR / mod['folder']
@@ -104,7 +152,7 @@ def remove_downloaded_mod(mod, button):
     button.configure(text="Download", fg_color="#5a189a", command=lambda: download_workshop_mod(mod, button))
 
 
-class ModManagerApp(ctk.CTk):
+class ScrapMechanicModLauncher(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("ScrapMechanic Mod Launcher")
@@ -263,7 +311,7 @@ class ModManagerApp(ctk.CTk):
 
         self.thanks_label = ctk.CTkLabel(
             self,
-            text="Huge Thanks to: CrackX02",
+            text="Huge Thanks to: CrackX02 & BenMcAvoy",
             text_color="#de0707",
             font=("Segoe UI", 12)
         )
@@ -272,5 +320,5 @@ class ModManagerApp(ctk.CTk):
 if __name__ == "__main__":
     ctk.set_appearance_mode("dark")
     ctk.set_default_color_theme("dark-blue")
-    app = ModManagerApp()
+    app = ScrapMechanicModLauncher()
     app.mainloop()

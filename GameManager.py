@@ -7,12 +7,12 @@
 # Discord: antalervin19
 # Web: https://www.iggames.eu
 
-
 import psutil
 import webbrowser
 from pathlib import Path
 import time
 from LogManager import log
+import win32api
 
 def kill_gameprocess():
     for proc in psutil.process_iter(['name']):
@@ -51,3 +51,22 @@ def scan_and_get_game_path():
     time.sleep(2)
 
     return game_path
+
+def get_exe_version_info(file_path):
+    try:
+        info = win32api.GetFileVersionInfo(file_path, "\\")
+        ms = info['FileVersionMS']
+        ls = info['FileVersionLS']
+        file_version_full = f"{ms >> 16}.{ms & 0xFFFF}.{ls >> 16}.{ls & 0xFFFF}"
+
+        pms = info['ProductVersionMS']
+        pls = info['ProductVersionLS']
+        product_version_full = f"{pms >> 16}.{pms & 0xFFFF}.{pls >> 16}.{pls & 0xFFFF}"
+
+        file_version = ".".join(file_version_full.split(".")[:3])
+        product_version = ".".join(product_version_full.split(".")[:3])
+
+        return file_version, product_version
+    except Exception as e:
+        print(f"Failed to get version info: {e}")
+        return None, None
