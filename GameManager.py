@@ -13,6 +13,8 @@ from pathlib import Path
 import time
 from LogManager import log
 import win32api
+import subprocess
+import os
 
 def kill_gameprocess():
     for proc in psutil.process_iter(['name']):
@@ -30,6 +32,17 @@ def run_gameprocess():
         log("Launching ScrapMechanic!")
     except Exception as e:
         log(f"Failed to launch ScrapMechanic: {e}")
+
+def inject_dll(injector_exe_path="Injector.exe", dll_path="SM-LuaConsole.dll"):
+    injector_exe = os.path.abspath(injector_exe_path)
+    dll = os.path.abspath(dll_path)
+
+    try:
+        result = subprocess.run([injector_exe, dll], check=True)
+        print("[*] Injection completed.")
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Injection failed: {e}")
+
 
 def scan_and_get_game_path():
     game_path = None
