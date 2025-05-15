@@ -10,8 +10,8 @@ A Work-In-Progress mod loader and launcher for the game **Scrap Mechanic**.
 - [Mod Creation](#mod-creation)
   - [Mod Content Structure](#mod-content-structure)
   - [File and Folder Structure](#file-and-folder-structure)
-  - [Licensing](#license)
-  - [Credits](#credits)
+ - [Licensing](#license)
+ - [Credits](#credits)
 
 ---
 
