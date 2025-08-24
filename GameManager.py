@@ -33,7 +33,7 @@ def run_gameprocess():
     except Exception as e:
         log(f"Failed to launch ScrapMechanic: {e}")
 
-def inject_dll(injector_exe_path="Injector.exe", dll_path="SM-LuaConsole.dll"):
+def inject_dll(injector_exe_path="Injector.exe", dll_path="NetworkChecksumDisabler.dll"):
     injector_exe = os.path.abspath(injector_exe_path)
     dll = os.path.abspath(dll_path)
 

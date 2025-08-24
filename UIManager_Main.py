@@ -185,7 +185,7 @@ class ScrapMechanicModLauncher(ctk.CTk):
             fg_color="#5a189a",
             hover_color="#3a0ca3",
             corner_radius=6,
-            command=self.run_game_and_function
+            command=self.rungame
         )
         self.play_button.pack(pady=2, padx=10, anchor="center")
 
@@ -210,10 +210,19 @@ class ScrapMechanicModLauncher(ctk.CTk):
     def rungame(self):
         run_gameprocess()
 
-        self.after(1000, self.after_game_launch)
-
-    def after_game_launch(self):
-        log("Steam game launched and post-launch function executed.")
+        import psutil
+        import time
+        from GameManager import inject_dll
+        injector_path = str((RESOURCES_DIR / "Core" / "Injector.exe").resolve())
+        dll_path = str((RESOURCES_DIR / "Core" / "NetworkChecksumDisabler.dll").resolve())
+        for _ in range(30):
+            if any(proc.info['name'] and proc.info['name'].lower() == "scrapmechanic.exe" for proc in psutil.process_iter(['name'])):
+                inject_dll(injector_exe_path=injector_path, dll_path=dll_path)
+                log("Injected NetworkChecksumDisabler.dll into ScrapMechanic.exe")
+                break
+            time.sleep(1)
+        else:
+            log("ScrapMechanic.exe did not launch within 30 seconds. Injection skipped.")
 
     def clearsettingswidget(self):
         if self.about_button:

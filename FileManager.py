@@ -24,8 +24,11 @@ async def copy_file(src_path: Path, dest_path: Path):
 async def install_mod(mod_folder: Path, game_folder: Path):
     mod_files_path = mod_folder / "ModFiles"
     tasks = []
-    for root, _, files in os.walk(mod_files_path):
+    for root, dirs, files in os.walk(mod_files_path):
+        dirs[:] = [d for d in dirs if not d.startswith("IGNORE#")]
         for file in files:
+            if file.startswith("IGNORE#"):
+                continue
             src_file_path = Path(root) / file
             relative_path = src_file_path.relative_to(mod_files_path)
             dest_file_path = game_folder / relative_path
